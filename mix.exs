@@ -5,9 +5,26 @@ defmodule GaeSecretProvider.MixProject do
     [
       app: :gcp_secret_provider,
       version: "0.1.0",
+      description: description(),
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
+      source_url: "https://github.com/adzz/gcp_secret_provider",
+      package: package(),
       deps: deps()
+    ]
+  end
+
+  defp description do
+    """
+    A configuration provider that gets secrets from Google Secret Manager on app start
+    """
+  end
+
+  defp package do
+    [
+      maintainers: ["Adzz"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/adzz/gcp_secret_provider"}
     ]
   end
 
