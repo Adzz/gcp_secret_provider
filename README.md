@@ -34,9 +34,6 @@ def releases() do
 end
 ```
 
-
-
-
 Then in your `config/prod.exs` or your `releases.exs` you can write this:
 
 ```elixir
@@ -100,6 +97,9 @@ Now you may ask why might I do all this rather than just get all the secrets in 
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 by adding `gcp_secret_provider` to your list of dependencies in `mix.exs`:
+
+*NOTE* If you are using an umbrella project, the dependancy can't be in the root `mix.exs`, but must be inside one of the apps that the release is building.
+
 
 ```elixir
 def deps do
