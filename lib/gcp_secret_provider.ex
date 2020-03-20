@@ -26,13 +26,14 @@ defmodule GcpSecretProvider do
 
   @doc "Called automatically, queries google secret manager for secrets and puts them in config"
   def load(config, %{project: project}) do
-    # This can be runtime Config if you put it in releases.exs
-    json = Application.get_env(:gcp_secret_provider, :service_account)
+    json =
+      Keyword.fetch!(config, :gcp_secret_provider)
+      |> Keyword.fetch!(:service_account)
 
     # If Goth is not already configured, we should put the json in otherwise it will crash on
     # start up. If it is already configured, we should restore it to the state it was at before
     # we hijacked it.
-    current_goth_config = Application.get_all_env(:goth)
+    current_goth_config = Keyword.get(config, :goth, [])
     Application.put_env(:goth, :json, json)
 
     new_goth_config =

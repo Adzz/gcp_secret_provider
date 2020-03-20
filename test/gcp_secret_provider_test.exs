@@ -35,6 +35,7 @@ defmodule GcpSecretProviderTest do
   describe "load/2" do
     test "Replaces secret with value from google API, when request for secret is successful" do
       config = [
+        gcp_secret_provider: [service_account: "{}"],
         web_server: [
           {WebServer.Endpoint,
            [
@@ -101,11 +102,9 @@ defmodule GcpSecretProviderTest do
                {
                  # Goth config is added if it isn't there already, so that the app can boot and not crash
                  :goth,
-                 [
-                   json:
-                     "{\n    \"project_id\": \"PROJECT_ID\",\n    \"private_key\": \"MOCK_KEY\",\n    \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/my_lovely_app.iam.gserviceaccount.com\"\n  }"
-                 ]
+                 [json: "{}"]
                },
+               {:gcp_secret_provider, [service_account: "{}"]},
                {:web_server,
                 [
                   {WebServer.Endpoint,
@@ -134,7 +133,11 @@ defmodule GcpSecretProviderTest do
     end
 
     test "If goth config is provided, we restore that config once we are done" do
-      config = [goth: [json: "STUFF"], other_app: [secret: {"GAE_SECRET", :string, "SHH"}]]
+      config = [
+        goth: [json: "STUFF"],
+        other_app: [secret: {"GAE_SECRET", :string, "SHH"}],
+        gcp_secret_provider: [service_account: "{}"]
+      ]
 
       expect(GcpSecretProvider.MockGoth, :for_scope, fn scope ->
         assert scope == "https://www.googleapis.com/auth/cloud-platform"
@@ -152,12 +155,17 @@ defmodule GcpSecretProviderTest do
 
       assert GcpSecretProvider.load(config, @project) == [
                {:goth, [json: "STUFF"]},
-               {:other_app, [secret: "apples"]}
+               {:other_app, [secret: "apples"]},
+               {:gcp_secret_provider, [service_account: "{}"]}
              ]
     end
 
     test "When the secret 404s we raise an error" do
-      config = [goth: [json: "STUFF"], other_app: [secret: {"GAE_SECRET", :string, "SHH"}]]
+      config = [
+        goth: [json: "STUFF"],
+        other_app: [secret: {"GAE_SECRET", :string, "SHH"}],
+        gcp_secret_provider: [service_account: "{}"]
+      ]
 
       expect(GcpSecretProvider.MockGoth, :for_scope, fn scope ->
         assert scope == "https://www.googleapis.com/auth/cloud-platform"

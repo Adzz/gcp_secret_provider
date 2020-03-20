@@ -1,4 +1,5 @@
 import Config
+
 config(:goth, json: ~S({
     "project_id": "PROJECT_ID",
     "private_key": "MOCK_KEY",
