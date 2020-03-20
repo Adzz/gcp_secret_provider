@@ -1,24 +1,13 @@
 defmodule GcpSecretProvider do
   @moduledoc """
-  This is a config provider which leverages the default service account in GAE to allow you to
-  access environment secrets on application boot. That means, we can securely store secrets in GAE
-  in a number of ways, and have them read into our application config when we boot an app. Then we
-  can change those secrets and reboot the app to get the new config, without having to re-deploy
-  or recompile.
+  This is a config provider which fetches secrets from Google's Secret Manager API when the app
+  starts. This can be useful for pulling in secrets without having to redeploy if you cycle them for
+  example.
 
-  It requires Goth.
+  We use goth to authorize us to make requests to the API meaning you have to provide this library
+  with a service account that has a Secret Manager Secret Accessor role.
   """
   @behaviour Config.Provider
-
-  @doc """
-  By default all GAE apps get a service account which can access permissions on certain resources
-  like the secret manager API. We should pass to init the name of the env var that will point to
-  that default service account. Currently it is GOOGLE_APPLICATION_CREDENTIALS, so we would do this
-
-    config_providers: [{GcpSecretProvider, %{project: "my_google_proj-12345"}}],
-
-  in our release config in the mix.exs.
-  """
 
   defmodule IncorrectConfigurationError do
     defexception [:exception, :message]
@@ -35,14 +24,10 @@ defmodule GcpSecretProvider do
         """
       )
 
+  @doc "Called automatically, queries google secret manager for secrets and puts them in config"
   def load(config, %{project: project}) do
-    # This should be provided in the build step. Once there it should be in the env thereafter.
-    # It is required for deploying anyway.
-
     # This can be runtime Config if you put it in releases.exs
     json = Application.get_env(:gcp_secret_provider, :service_account)
-
-    # json = system().fetch_env!("GOOGLE_APPLICATION_CREDENTIALS")
 
     # If Goth is not already configured, we should put the json in otherwise it will crash on
     # start up. If it is already configured, we should restore it to the state it was at before
@@ -130,5 +115,4 @@ defmodule GcpSecretProvider do
 
   defp http(), do: Application.get_env(:gcp_secret_provider, :http, GcpSecretProvider.Http)
   defp goth_token(), do: Application.get_env(:gcp_secret_provider, :goth, GcpSecretProvider.Goth)
-  # defp system(), do: Application.get_env(:gcp_secret_provider, :system_module, System)
 end
