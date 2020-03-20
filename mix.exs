@@ -1,4 +1,4 @@
-defmodule GaeSecretProvider.MixProject do
+defmodule GcpSecretProvider.MixProject do
   use Mix.Project
 
   def project do
