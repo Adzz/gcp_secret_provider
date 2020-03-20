@@ -104,7 +104,7 @@ by adding `gcp_secret_provider` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:gcp_secret_provider, "~> 0.1.1"}
+    {:gcp_secret_provider, "~> 0.1.2"}
   ]
 end
 ```

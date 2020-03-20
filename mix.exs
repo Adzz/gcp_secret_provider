@@ -4,7 +4,7 @@ defmodule GcpSecretProvider.MixProject do
   def project do
     [
       app: :gcp_secret_provider,
-      version: "0.1.1",
+      version: "0.1.2",
       description: description(),
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
