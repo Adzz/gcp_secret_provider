@@ -36,6 +36,7 @@ defmodule GaeSecretProvider.MixProject do
     [
       {:httpoison, ">0.0.0"},
       {:goth, "~> 1.1.0"},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:mox, "~> 0.5", only: :test}
     ]
   end
