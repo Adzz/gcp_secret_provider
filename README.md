@@ -1,5 +1,9 @@
 # GCP Secret Provider
 
+[![Module Version](https://img.shields.io/hexpm/v/gcp_secret_provider.svg)](https://hex.pm/packages/gcp_secret_provider)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/gcp_secret_provider/)
+[![Total Download](https://img.shields.io/hexpm/dt/gcp_secret_provider.svg)](https://hex.pm/packages/gcp_secret_provider)
+
 This is a runtime config provider for secrets on GCP. It will replace config in your app with secrets stored in [Google's secret manager API](https://cloud.google.com/secret-manager) on app boot.
 
 That means secrets are encrypted at rest and you can cycle or change a secret in the cloud console and re-start (note: _not_ redeploy) the app to get the new secrets. It also means you don't have to put all of your secrets into your build server (circle, travis or github actions) and you do not have to check the secrets into source control. Access to the secrets can be tightly controlled by IAM policies in GCP without affecting anyone's ability to deploy the app if needed.
