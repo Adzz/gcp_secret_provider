@@ -99,11 +99,6 @@ defmodule GcpSecretProviderTest do
       end)
 
       assert GcpSecretProvider.load(config, @project) == [
-               {
-                 # Goth config is added if it isn't there already, so that the app can boot and not crash
-                 :goth,
-                 [json: "{}"]
-               },
                {:gcp_secret_provider, [service_account: "{}"]},
                {:web_server,
                 [
@@ -132,37 +127,8 @@ defmodule GcpSecretProviderTest do
              ]
     end
 
-    test "If goth config is provided, we restore that config once we are done" do
-      config = [
-        goth: [json: "STUFF"],
-        other_app: [secret: {"GAE_SECRET", :string, "SHH"}],
-        gcp_secret_provider: [service_account: "{}"]
-      ]
-
-      expect(GcpSecretProvider.MockGoth, :for_scope, fn scope ->
-        assert scope == "https://www.googleapis.com/auth/cloud-platform"
-        @mock_token
-      end)
-
-      GcpSecretProvider.MockHttp
-      |> expect(:get, fn url, headers ->
-        assert url ==
-                 "https://secretmanager.googleapis.com/v1/projects/my project/secrets/SHH/versions/latest:access"
-
-        assert headers == @headers
-        {:ok, %{body: response_body("apples"), status_code: 200}}
-      end)
-
-      assert GcpSecretProvider.load(config, @project) == [
-               {:goth, [json: "STUFF"]},
-               {:other_app, [secret: "apples"]},
-               {:gcp_secret_provider, [service_account: "{}"]}
-             ]
-    end
-
     test "When the secret 404s we raise an error" do
       config = [
-        goth: [json: "STUFF"],
         other_app: [secret: {"GAE_SECRET", :string, "SHH"}],
         gcp_secret_provider: [service_account: "{}"]
       ]

@@ -26,31 +26,13 @@ defmodule GcpSecretProvider do
 
   @doc "Called automatically, queries google secret manager for secrets and puts them in config"
   def load(config, %{project: project}) do
-    json =
-      Keyword.fetch!(config, :gcp_secret_provider)
-      |> Keyword.fetch!(:service_account)
-
-    # If Goth is not already configured, we should put the json in otherwise it will crash on
-    # start up. If it is already configured, we should restore it to the state it was at before
-    # we hijacked it.
-    current_goth_config = Keyword.get(config, :goth, [])
-    Application.put_env(:goth, :json, json)
-
-    new_goth_config =
-      case current_goth_config do
-        [] -> Application.get_all_env(:goth)
-        _ -> current_goth_config
-      end
-
     # We need to start any app we may depend on.
     {:ok, _} = Application.ensure_all_started(:goth)
     {:ok, _} = Application.ensure_all_started(:httpoison)
 
     new_config = insert_secrets(config, project)
 
-    # Restore Goth config to what it was before, unless it was empty in which case
-    Config.Reader.merge(config, goth: new_goth_config)
-    # Secrets take precedence
+    config
     |> Config.Reader.merge(new_config)
   end
 
