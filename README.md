@@ -8,7 +8,7 @@ This is a runtime config provider for secrets on GCP. It will replace config in 
 
 That means secrets are encrypted at rest and you can cycle or change a secret in the cloud console and re-start (note: _not_ redeploy) the app to get the new secrets. It also means you don't have to put all of your secrets into your build server (circle, travis or github actions) and you do not have to check the secrets into source control. Access to the secrets can be tightly controlled by IAM policies in GCP without affecting anyone's ability to deploy the app if needed.
 
-To work it needs one thing, a service account with the [Secret Manager Secret Accessor role](https://cloud.google.com/secret-manager/docs/access-control). We recommend that you do that in `releases.exs` so that it is runtime config:
+To work it needs one thing, a service account with the [Secret Manager Secret Accessor role](https://cloud.google.com/secret-manager/docs/access-control). We recommend that you do that in `runtime.exs` so that it is runtime config:
 
 ```elixir
 config(:gcp_secret_provider, service_account: System.fetch_env!("GOOGLE_APPLICATION_CREDENTIALS"))
@@ -38,7 +38,7 @@ def releases() do
 end
 ```
 
-Then in your `config/prod.exs` or your `releases.exs` you can write this:
+Then in your `runtime.exs` you can write this:
 
 ```elixir
 config(:db, Db.Repo,
